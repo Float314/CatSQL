@@ -1,7 +1,10 @@
+use rusqlite::{self, Connection, fallible_iterator::Unwrap};
 /* Tokenizer in rust */
 use shlex;
 use std::process;
 use colorize::{self, AnsiColor};
+
+use crate::dbactions::{self, create, use_db};
 
 fn gen_tokens(inp: String) -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let tokens = shlex::split(&inp)
@@ -10,17 +13,26 @@ fn gen_tokens(inp: String) -> Result<Vec<String>, Box<dyn std::error::Error>> {
 }
 
 // parse tokens and match their current values for now.
-fn parse_tokens(gen_tokens: Vec<String>) {
+fn parse_tokens(gen_tokens: Vec<String>, conn: Connection) {
+    let mut current_db = conn;
     if gen_tokens[0] == "hi" {
         println!("Recieved `hi`");
     }
     else if gen_tokens[0] == "create" {
-        println!("Recieved create");
+        if gen_tokens[1] == "database" {
+            create::create_db(<String as Clone>::clone(&gen_tokens[3]));
+        } else if gen_tokens[1] == "table" {
+            create::create_table(gen_tokens, current_db);// i fcking hate ownerships in ust
+        }
     }
     else if gen_tokens[0] == "quit" {
         println!("{}", "Quitting!".bold().b_red());
         process::exit(0); //quit successfully
-    } else {
+    } 
+    else if gen_tokens[0] == "use" {
+        current_db = use_db::use_db(<String as Clone>::clone(&gen_tokens[1])).unwrap();
+    }
+    else {
         println!(
             "{}, `{}` Check docs and try again.",
             "Unknown Command!".red().bold(),
@@ -29,8 +41,8 @@ fn parse_tokens(gen_tokens: Vec<String>) {
     }
 }
 
-pub fn tokenize(inp: String) {
+pub fn tokenize(inp: String, db: rusqlite::Connection) {
     let gen_tok = gen_tokens(inp).unwrap();
     
-    parse_tokens(gen_tok);
+    parse_tokens(gen_tok, db);
 }
