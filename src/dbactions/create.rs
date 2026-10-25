@@ -19,10 +19,8 @@ pub fn create_db(name: String) -> Result<(), Box<dyn std::error::Error>> {
     let path_windows: String = "C:/.catsql_db".into();
 
     if cfg!(target_os = "windows") {
-        let _ = std::fs::create_dir_all(path_windows);
         create_db_rn(name).expect("Failed to create database");
     } else {
-        let _ = std::fs::create_dir_all(path_unix);
         create_db_rn(name).expect("Failed to create database");
     }
 
@@ -55,12 +53,7 @@ Result<(), Box<dyn std::error::Error>>
     let exec = database.execute(
         &shlex::try_join(v2).unwrap(),
         ()
-    );
-
-    match exec {
-        Ok(_) => println!("{}", "Query OK!".green().bold()),
-        Err(e) => println!("{} Details: {}", "Error Called!".red().bold(), dbg!(e))
-    }
+    )?;
 
     Ok(())
 

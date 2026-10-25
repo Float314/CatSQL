@@ -3,7 +3,8 @@ use rusqlite::{Connection, Result};
 use colorize::{self, AnsiColor};
 
 pub fn use_db(path: String) -> Result<Connection, Box<dyn std::error::Error>> {
-    let db = Connection::open(path.clone());
+    let path2: String = path.clone() + ".sqlite";
+    let db = Connection::open(path2.clone());
 
     match &db { // all i missing in [RUST] is an [AMPERSAND]
         Ok(c) => println!("{} - Using Database `{}'", "Query OK!".bold().green(), path.clone().bold()),

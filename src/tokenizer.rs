@@ -46,6 +46,12 @@ fn parse_tokens(gen_tokens: Vec<String>, conn: Connection) {
     else if gen_tokens[0] == "use" {
         current_db = use_db::use_db(<String as Clone>::clone(&gen_tokens[1])).unwrap();
     }
+    else if gen_tokens[0] == "license" {
+        println!("This software is licensed under the {}. ", "GNU Lessr General Public License (GPL) v3".green().bold());
+        println!("Copyright (C) 2026, Float314; Permission to use, modify and redistribute is granted");
+        println!("Under specific conditions. Read <https://www.gnu.org/licenses/lgpl-3.0.html> for more");
+        println!("info. \n{}", "The cat is free to anyone adopt and any child to play!. ".blue().bold())
+    }
     else {
         println!(
             "{} - `{}` Check docs and try again.",
