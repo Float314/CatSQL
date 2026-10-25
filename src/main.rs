@@ -1,5 +1,6 @@
 use colorize::*;
 use inquire::*;
+use rusqlite::Connection;
 use rustyline::{self, DefaultEditor};
 
 mod tokenizer;
@@ -25,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         */
         let mut lin = readline.unwrap();
 
-        tokenizer::tokenize(lin);
+        tokenizer::tokenize(lin, Connection::open("").unwrap());
     }
     Ok(())
 }

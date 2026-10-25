@@ -39,7 +39,8 @@ pub fn create_db_rn(name: String) -> Result<(), Box<dyn std::error::Error>> {
 
 // --------------------- Table ----------------------------------------------
 
-pub fn create_table(queri: Vec<String>, database: Connection)
+pub fn create_table(queri: Vec<String>, database: Connection) -> 
+Result<(), Box<dyn std::error::Error>>
 {
     let binding = queri.clone(); 
 
@@ -60,5 +61,7 @@ pub fn create_table(queri: Vec<String>, database: Connection)
         Ok(_) => println!("{}", "Query OK!".green().bold()),
         Err(e) => println!("{} Details: {}", "Error Called!".red().bold(), dbg!(e))
     }
+
+    Ok(())
 
 }

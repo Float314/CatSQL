@@ -19,10 +19,24 @@ fn parse_tokens(gen_tokens: Vec<String>, conn: Connection) {
         println!("Recieved `hi`");
     }
     else if gen_tokens[0] == "create" {
-        if gen_tokens[1] == "database" {
-            create::create_db(<String as Clone>::clone(&gen_tokens[3]));
+        if gen_tokens.len() <= 1 {
+            println!("{} - Provide an argument!", "Error!".red().bold())
+        }
+        else if gen_tokens[1] == "database" {
+            create::create_db(<String as Clone>::clone(&gen_tokens[2]))
+                .expect("Error! Could not create Database!");
         } else if gen_tokens[1] == "table" {
-            create::create_table(gen_tokens, current_db);// i fcking hate ownerships in ust
+            let result = create::create_table(gen_tokens, current_db);
+            match result {
+                Ok(_) => {
+                    println!("{} - Table created successfully", "Success!");
+                }
+                Err(e) => {
+                    println!("{} - {}", "Error!".red().bold(), e);
+                }
+            }
+        } else {
+            println!("{} Check docs and retry!", "Error! ");
         }
     }
     else if gen_tokens[0] == "quit" {
@@ -34,7 +48,7 @@ fn parse_tokens(gen_tokens: Vec<String>, conn: Connection) {
     }
     else {
         println!(
-            "{}, `{}` Check docs and try again.",
+            "{} - `{}` Check docs and try again.",
             "Unknown Command!".red().bold(),
             gen_tokens[0]
         );
