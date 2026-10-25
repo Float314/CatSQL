@@ -5,6 +5,7 @@
 
 use rusqlite::{self, Connection};
 use colorize::{self, AnsiColor};
+use shlex;
 
 struct field_table {
     name: String,
@@ -40,9 +41,20 @@ pub fn create_db_rn(name: String) -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn create_table(queri: Vec<String>, database: Connection)
 {
-    // son why exec()? 
+    let binding = queri.clone(); 
 
-    let exec = database.execute("", ());
+    // ------- Borrowed from stack overflow --------------
+    // Source - https://stackoverflow.com/a/33217302
+    // Posted by oli_obk, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-10-25, License - CC BY-SA 4.0
+
+    let v2: Vec<&str> = binding.iter().map(|s| &**s).collect();
+    // -------- [END OF STACK OVERFLOW CODE] --------------
+    
+    let exec = database.execute(
+        &shlex::try_join(v2).unwrap(),
+        ()
+    );
 
     match exec {
         Ok(_) => println!("{}", "Query OK!".green().bold()),
