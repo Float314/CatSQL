@@ -1,0 +1,13 @@
+[package]
+name = "CatSQL"
+version = "0.1.0"
+edition = "2024"
+license = "LGPL-3.0-or-later"
+
+[dependencies]
+colorize = "0.1.0"
+inquire = "0.9.4"
+rusqlite = "0.41.0"
+rustyline = "19.0.0"
+serde = "1.0.229"
+shlex = "2.0.1"
