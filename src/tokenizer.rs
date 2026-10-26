@@ -73,6 +73,11 @@ fn parse_tokens(gen_tokens: Vec<String>, current_db: &mut Option<Connection>)
     }
     else if gen_tokens[0] == "disconnect" {
         *current_db = Some(Connection::open_in_memory().unwrap());
+        println!(
+            "{} {} Using blank database loaded in memory",
+            "Query OK!".green().bold(), 
+            "Database disconnected.".yellow()
+        );
     }
     else {
         println!(
