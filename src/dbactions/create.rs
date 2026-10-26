@@ -1,60 +1,70 @@
 /*
  * Create DB Using rusqlite
- * 
+ *
  */
 
-use rusqlite::{self, Connection};
-use colorize::{self, AnsiColor};
-use shlex;
-
-struct field_table {
-    name: String,
-    type_f: String,
-    len: String
-}
+use rusqlite::Connection;
+use colorize::*;
 
 // ----------------------- Database ------------------------------------------
 pub fn create_db(name: String) -> Result<(), Box<dyn std::error::Error>> {
-    let path_unix: String= "~/.catsql_db".into();
-    let path_windows: String = "C:/.catsql_db".into();
-
-    if cfg!(target_os = "windows") {
-        create_db_rn(name).expect("Failed to create database");
-    } else {
-        create_db_rn(name).expect("Failed to create database");
+    match create_db_rn(name) {
+        Ok(_) => {
+            println!("{}", "Database created successfully.".green().bold());
+            Ok(())
+        }
+        Err(e) => Err(e),
     }
-
-    Ok(())
 }
 
 pub fn create_db_rn(name: String) -> Result<(), Box<dyn std::error::Error>> {
-    let name2: String = name + ".sqlite" ;
+    let name2: String = name + ".sqlite";
 
-    let _ = rusqlite::Connection::open(name2);
+    // Opening a SQLite database creates the file if it does not exist.
+    Connection::open(name2)?;
 
     Ok(())
 }
 
 // --------------------- Table ----------------------------------------------
 
-pub fn create_table(queri: Vec<String>, database: Connection) -> 
+pub fn create_table(queri: &[String], database: &Connection) ->
 Result<(), Box<dyn std::error::Error>>
 {
-    let binding = queri.clone(); 
+    // The tokens come from shlex::split, so joining them with spaces restores
+    // the SQL. Do NOT use shlex::try_join here: it quotes characters such as
+    // '(' and ')' and turns valid SQL into invalid SQL.
+    let query = queri.join(" ");
 
-    // ------- Borrowed from stack overflow --------------
-    // Source - https://stackoverflow.com/a/33217302
-    // Posted by oli_obk, modified by community. See post 'Timeline' for change history
-    // Retrieved 2026-10-25, License - CC BY-SA 4.0
-
-    let v2: Vec<&str> = binding.iter().map(|s| &**s).collect();
-    // -------- [END OF STACK OVERFLOW CODE] --------------
-    
-    let exec = database.execute(
-        &shlex::try_join(v2).unwrap(),
-        ()
-    )?;
+    database.execute(&query, ())?;
 
     Ok(())
+}
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_table_uses_valid_sql() {
+        let db = Connection::open_in_memory().unwrap();
+        let tokens: Vec<String> = [
+            "create", "table", "users", "(id", "integer", "primary", "key,", "name", "text)",
+        ]
+        .iter()
+        .map(|token| token.to_string())
+        .collect();
+
+        create_table(&tokens, &db).unwrap();
+
+        let count: i64 = db
+            .query_row(
+                "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'users'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+
+        assert_eq!(count, 1);
+    }
 }

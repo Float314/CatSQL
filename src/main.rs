@@ -14,19 +14,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("{}", "Welcome!".green().bold());
 
+    // Keep one connection for the whole session. `use` replaces it with the
+    // selected database, so later commands run against the same database.
+    let mut db: Option<Connection> = None;
+
     loop {
         let mut rl = DefaultEditor::new()?;
         let readline = rl.readline("catsql> ");
 
-        /*
-        match readline.clone() {
-            Ok(str) => println!(""),
-            Err(_) => println!("Error!")
-        }
-        */
-        let mut lin = readline.unwrap();
+        let lin = match readline {
+            Ok(line) => line,
+            Err(_) => break,
+        };
 
-        tokenizer::tokenize(lin, Connection::open("").unwrap());
+        tokenizer::tokenize(lin, &mut db);
     }
     Ok(())
 }
