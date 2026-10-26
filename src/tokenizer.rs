@@ -13,8 +13,13 @@ fn gen_tokens(inp: String) -> Result<Vec<String>, Box<dyn std::error::Error>> {
 }
 
 // parse tokens and match their current values for now.
-fn parse_tokens(gen_tokens: Vec<String>, conn: Connection) {
+fn parse_tokens(gen_tokens: Vec<String>, conn: Connection) 
+    -> Result<(), Box<dyn std::error::Error>>
+    {
     let mut current_db = conn;
+    if gen_tokens.len() == 1 {
+        return Err("No agument provided".into());
+    }
     if gen_tokens[0] == "hi" {
         println!("Recieved `hi`");
     }
@@ -59,10 +64,14 @@ fn parse_tokens(gen_tokens: Vec<String>, conn: Connection) {
             gen_tokens[0]
         );
     }
+    Ok(())
 }
 
 pub fn tokenize(inp: String, db: rusqlite::Connection) {
     let gen_tok = gen_tokens(inp).unwrap();
     
-    parse_tokens(gen_tok, db);
+    match parse_tokens(gen_tok, db) {
+        Ok(()) => {},
+        Err(e) => println!("{} {}", "Error! ".red().bold(), dbg!(e))
+    };
 }
