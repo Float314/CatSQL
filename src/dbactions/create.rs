@@ -24,10 +24,43 @@ pub enum CreateCommandType {
     Table
 }
 
+/*
+ * Field property (coloumn property) 
+ * Primary Key -> PrimaryKey
+ * Not Blank -> NOT NULL 
+ * Unique ->  Unique (Can be null iirc sql does this (The backend is SQL i dont have yto worry bout that))
+*/
+#[derive(Debug, PartialEq)]
+pub enum FieldProperty { 
+    PrimaryKey,
+    NotNull,
+    Unique
+}
+
+/* I Think i need no explanation for this */
+#[derive(Debug, PartialEq)]
+pub enum ColType {
+    Integer,
+    Varchar, 
+    Text, 
+    Floating, 
+    Boolean,
+    DateTime // unix time
+}
+
+/* Struct for coloumn info. Also self explanatory :/  */
+#[derive(Debug, PartialEq)]
+pub struct ColInfo {
+    Name: String, 
+    Type: ColType,
+    TypeLen: i32,
+    Property: Vec<FieldProperty>
+}
+
 /**
  * What arguments are we going to pass to the Create command
  * 
- * If na -> just an enum ig
+ * If na -> just an enum ig (used for database)
  * 
  * If yes -> then we have a vector of strings that we will pass to the command
  * 
@@ -36,7 +69,7 @@ pub enum CreateCommandType {
 #[derive(Debug, PartialEq)]
 pub enum CreateCommandArguments {
     Na,
-    Ye(Vec<String>)
+    Ye(Vec<ColInfo>)
 }
 
 /**
