@@ -6,6 +6,44 @@
 use rusqlite::Connection;
 use colorize::*;
 
+// ------------------- tokenizer section ------------------------
+
+#[derive(Debug, Clone)]
+pub enum CreateCommandType {
+    Table, 
+    Database,
+}
+
+#[derive(Debug, Clone)]
+pub enum SqlDatatypes {
+    Integer, 
+    Text,
+    Varchar, 
+    Boolean, 
+    Date
+}
+
+#[derive(Debug, Clone)]
+pub enum SQLPossibleColoumnArgs {
+    NotNull,
+    PrimaryKey,
+    Unique
+}
+
+#[derive(Debug, Clone)]
+pub struct CreateCommandColoumnArgs {
+    pub datatype: SqlDatatypes,
+    pub col_mame: String,
+    pub args: Vec<SQLPossibleColoumnArgs>
+}
+
+#[derive(Debug, Clone)]
+pub struct TokenCreate {
+    pub create_type: CreateCommandType,
+    pub name: String,
+    pub args: Vec<CreateCommandColoumnArgs>,
+} // few... tokenizer would take care og this shii.
+
 // ----------------------- Database ------------------------------------------
 pub fn create_db(name: String) -> Result<(), Box<dyn std::error::Error>> {
     match create_db_rn(name) {

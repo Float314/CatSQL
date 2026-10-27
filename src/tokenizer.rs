@@ -13,12 +13,16 @@ fn gen_tokens(inp: String) -> Result<Vec<String>, Box<dyn std::error::Error>> {
 }
 
 // parse tokens and match their current values for now.
-fn parse_tokens(gen_tokens: Vec<String>, current_db: &mut Option<Connection>)
+fn parse_tokens(mut gen_tokens: Vec<String>, current_db: &mut Option<Connection>)
     -> Result<(), Box<dyn std::error::Error>>
     {
     if gen_tokens.is_empty() {
         return Err("No agument provided".into());
     }
+
+    if gen_tokens.last().unwrap().chars().last().unwrap() != ';' {
+        return Err("Expected Semicolon at last character!".into());
+    } 
     if gen_tokens[0] == "hi" {
         println!("Recieved `hi`");
     }

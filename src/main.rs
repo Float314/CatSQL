@@ -5,6 +5,7 @@ use rustyline::{self, DefaultEditor};
 
 mod tokenizer;
 mod dbactions;
+mod tokenidentifier;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pwd = Password::new("Enter Password")

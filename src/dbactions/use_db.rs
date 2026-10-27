@@ -2,6 +2,8 @@
 use rusqlite::{Connection, Result};
 use colorize::{self, AnsiColor};
 
+// we will not include tokenizer cause well, self explanatory :/
+
 pub fn use_db(path: String) -> Result<Connection, Box<dyn std::error::Error>> {
     let path2: String = path.clone() + ".sqlite";
     let db = Connection::open(path2.clone());
