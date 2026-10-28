@@ -6,6 +6,7 @@ pub async fn create_db(name: String) -> Result<(),Box<dyn std::error::Error>>{
     let filepath = "./".to_owned() + &filename;
     let db = Builder::new_local(filepath)
         .build().await?;
+    let _connection = db.connect()?;
 
     Ok(())
 }

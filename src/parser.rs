@@ -14,7 +14,7 @@ fn splitcommand_shlex(command: String)
         return vect;
 }
 
-pub fn match_args(command: String)
+pub async fn match_args(command: String)
     -> Result<(), Box<dyn std::error::Error>> {
         let argums = splitcommand_shlex(command);
 
@@ -28,15 +28,24 @@ pub fn match_args(command: String)
             println!("{} is licensed under the amazing {}", "CarSQL".blue().bold(), "GNU LGPL v3".green().bold())
         } 
         else if argums[0] == "create" {
-            if argums[1] == "database" {
-                println!("creating database...");
-                create_db::create_db(<std::string::String as Clone>::clone(&argums[2]));
-            }
-            else if argums[1] == "table" {
-                println!("not implemented yet. Wait till cat wakes up.")
-            }
-            else {
-                println!("{} - {} ; Check docs and try again!", "Unknown Argument!".red().bold(), argums[1])
+            match argums.get(1).map(String::as_str) {
+                Some("database") => {
+                    if let Some(name) = argums.get(2) {
+                        println!("creating database...");
+                        create_db::create_db(name.clone()).await?;
+                    } else {
+                        println!("Usage: create database <name>");
+                    }
+                }
+                Some("table") => {
+                    println!("not implemented yet. Wait till cat wakes up.")
+                }
+                Some(argument) => {
+                    println!("{} - {} ; Check docs and try again!", "Unknown Argument!".red().bold(), argument)
+                }
+                None => {
+                    println!("Usage: create database <name>");
+                }
             }
         }
         else {
@@ -44,4 +53,3 @@ pub fn match_args(command: String)
         }
         Ok(())
 }
-

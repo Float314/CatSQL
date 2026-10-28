@@ -13,7 +13,8 @@ mod create_db;
 
     println!("{:?}", ast); */
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Hello, world!");
     println!("{}", "CatSQL v0.1 Alpha.".blue().bold());
     println!("Licensed under {}", "the GNU LGPL v3.".green().bold());
@@ -25,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         match rl {
             Ok(line) => {
-                parser::match_args(line)?;
+                parser::match_args(line).await?;
             }
             Err(rustyline::error::ReadlineError::Interrupted) => {
                 println!("{}", "Ctrl-c".red());
