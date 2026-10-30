@@ -1,6 +1,5 @@
 use colorize::AnsiColor;
 /* We pass query to sqlparser and then to libsql */
-use libsql::{self, Statement};
 use shlex::{self, Shlex};
 
 use crate::create_db;
@@ -24,7 +23,22 @@ pub async fn match_args(mut command: String)
         if first_char == '.' {
             ast::matchdotcmds(command.clone());
         } else {
-            println!("not implement ywt");
+            // generate ast
+            let ast_produced = ast::generate_ast(command).unwrap();
+
+            for statement in ast_produced {
+                match statement {
+                    sqlparser::ast::Statement::Query(_) => {
+                        println!("query")
+                    },
+                    sqlparser::ast::Statement::Use(_) => {
+                        print!("use")
+                    },
+                    _ => {
+                        return Err("Error statement".into());
+                    }
+                }
+            }
         }
         Ok(())
 }
