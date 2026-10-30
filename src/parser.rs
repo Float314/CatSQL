@@ -24,7 +24,7 @@ pub async fn match_args(mut command: String)
         if first_char == '.' {
             ast::matchdotcmds(command.clone());
         } else {
-            println!("not implement ywt")
+            println!("not implement ywt");
         }
         Ok(())
 }
