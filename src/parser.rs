@@ -1,4 +1,3 @@
-use colorize::AnsiColor;
 /* We pass query to sqlparser and then to libsql */
 use shlex::{self, Shlex};
 
@@ -14,7 +13,7 @@ fn splitcommand_shlex(command: String)
         return vect;
 }
 
-pub async fn match_args(mut command: String)
+pub async fn match_args(command: String)
     -> Result<(), Box<dyn std::error::Error>> {
         // first detect if its a dotcommand
 
@@ -24,7 +23,7 @@ pub async fn match_args(mut command: String)
             ast::matchdotcmds(command.clone());
         } else {
             // generate ast
-            let mut ast_produced = ast::generate_ast(command);
+            let ast_produced = ast::generate_ast(command);
 
             match &ast_produced {
                 Ok(_) => {}
@@ -42,29 +41,29 @@ pub async fn match_args(mut command: String)
                     
                     sqlparser::ast::Statement::CreateDatabase { 
                         db_name, 
-                        if_not_exists, 
-                        location, 
-                        managed_location, 
-                        or_replace, 
-                        transient, 
-                        clone, 
-                        data_retention_time_in_days, 
-                        max_data_extension_time_in_days, 
-                        external_volume, 
-                        catalog,
-                        replace_invalid_characters, 
-                        default_ddl_collation,
-                        storage_serialization_policy,
-                        comment,
-                        default_charset, 
-                        default_collation, 
-                        catalog_sync, 
-                        catalog_sync_namespace_mode, 
-                        catalog_sync_namespace_flatten_delimiter, 
-                        with_tags, 
-                        with_contacts } => 
+                        if_not_exists: _, 
+                        location: _, 
+                        managed_location: _, 
+                        or_replace: _, 
+                        transient: _, 
+                        clone: _, 
+                        data_retention_time_in_days: _, 
+                        max_data_extension_time_in_days: _, 
+                        external_volume: _, 
+                        catalog: _,
+                        replace_invalid_characters: _, 
+                        default_ddl_collation: _,
+                        storage_serialization_policy: _,
+                        comment: _,
+                        default_charset: _, 
+                        default_collation: _, 
+                        catalog_sync: _, 
+                        catalog_sync_namespace_mode: _, 
+                        catalog_sync_namespace_flatten_delimiter: _, 
+                        with_tags: _, 
+                        with_contacts: _ } => 
                     {
-                        create_db::create_db(db_name.to_string()); // really, eh? 
+                        create_db::create_db(db_name.to_string()).await; // really, eh? 
 
                     },
                     _ => {

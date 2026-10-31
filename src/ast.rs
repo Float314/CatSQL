@@ -1,9 +1,9 @@
 /* We use sqlparser to generate an AST */
 
-use std::{f64::consts::E, process};
+use std::process;
 use tabled::{Table, Tabled};
 use colorize::AnsiColor;
-use sqlparser::{self, ast::Statement, dialect::{self, GenericDialect}, parser::Parser};
+use sqlparser::{self, ast::Statement, dialect::GenericDialect, parser::Parser};
 
 #[derive(Tabled)]
 struct help_cmd {

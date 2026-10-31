@@ -1,6 +1,4 @@
 use colorize::*;
-use sqlparser::dialect::GenericDialect;
-use sqlparser::parser::Parser;
 
 mod parser;
 mod create_db;
@@ -29,7 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(line) => {
                 match parser::match_args(line).await {
                     Ok(_) => {},
-                    Err(e) => println!("Error occured!")
+                    Err(_e) => println!("Error occured!")
                 };
             }
             Err(rustyline::error::ReadlineError::Interrupted) => {
