@@ -27,7 +27,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         match rl {
             Ok(line) => {
-                parser::match_args(line).await?;
+                match parser::match_args(line).await {
+                    Ok(_) => {},
+                    Err(e) => println!("Error occured!")
+                };
             }
             Err(rustyline::error::ReadlineError::Interrupted) => {
                 println!("{}", "Ctrl-c".red());

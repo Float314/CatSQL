@@ -13,9 +13,17 @@ struct help_cmd {
 
 pub fn generate_ast(query: String) -> Result<Vec<Statement>, Box<dyn std::error::Error>> {
     let dialect = GenericDialect{};
-    let ast = Parser::parse_sql(&dialect, &query).unwrap();
+    let ast = Parser::parse_sql(&dialect, &query);
 
-    Ok(ast)
+    match &ast {
+        Ok(_) => {
+            return Ok(ast.unwrap())
+        }
+        Err(err) => {
+            println!("{} {}", "Error!".bold().red(), dbg!(err)); 
+            return Err("Thread Panicked".into());
+        }
+    }
 }
 
 pub fn matchdotcmds(mut query: String/* IT HAS TO BE WITH THE DOTS*/) {

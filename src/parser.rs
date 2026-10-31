@@ -24,9 +24,14 @@ pub async fn match_args(mut command: String)
             ast::matchdotcmds(command.clone());
         } else {
             // generate ast
-            let ast_produced = ast::generate_ast(command).unwrap();
+            let mut ast_produced = ast::generate_ast(command);
 
-            for statement in ast_produced {
+            match &ast_produced {
+                Ok(_) => {}
+                Err(err) => {println!("{}", err.to_string()); return Err("".into())}
+            }
+
+            for statement in ast_produced.unwrap() {
                 match statement {
                     sqlparser::ast::Statement::Query(_) => {
                         println!("query")
