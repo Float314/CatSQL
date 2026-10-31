@@ -39,6 +39,34 @@ pub async fn match_args(mut command: String)
                     sqlparser::ast::Statement::Use(_) => {
                         print!("use")
                     },
+                    
+                    sqlparser::ast::Statement::CreateDatabase { 
+                        db_name, 
+                        if_not_exists, 
+                        location, 
+                        managed_location, 
+                        or_replace, 
+                        transient, 
+                        clone, 
+                        data_retention_time_in_days, 
+                        max_data_extension_time_in_days, 
+                        external_volume, 
+                        catalog,
+                        replace_invalid_characters, 
+                        default_ddl_collation,
+                        storage_serialization_policy,
+                        comment,
+                        default_charset, 
+                        default_collation, 
+                        catalog_sync, 
+                        catalog_sync_namespace_mode, 
+                        catalog_sync_namespace_flatten_delimiter, 
+                        with_tags, 
+                        with_contacts } => 
+                    {
+                        create_db::create_db(db_name.to_string()); // really, eh? 
+
+                    },
                     _ => {
                         return Err("Error statement".into());
                     }
