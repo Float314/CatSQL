@@ -1,8 +1,11 @@
 use colorize::*;
 
+use crate::create_db::memory_db_load;
+
 mod parser;
 mod create_db;
 mod ast;
+mod queryfetch;
 
 /*  let dialect = GenericDialect {};
 
@@ -19,13 +22,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Licensed under {}", "the GNU LGPL v3.".green().bold());
 
     let mut editorlin = rustyline::DefaultEditor::new()?;
+    let mut db = memory_db_load().await.unwrap();
 
     loop {
         let rl = editorlin.readline("catsql> ");
 
         match rl {
             Ok(line) => {
-                match parser::match_args(line).await {
+                match parser::match_args(line, &mut db).await {
                     Ok(_) => {},
                     Err(_e) => println!("Error occured!")
                 };

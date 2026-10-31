@@ -1,6 +1,6 @@
 /* We pass query to sqlparser and then to libsql */
 use shlex::{self, Shlex};
-
+use libsql::{Connection};
 use crate::create_db;
 use crate::ast;
 
@@ -13,7 +13,7 @@ fn splitcommand_shlex(command: String)
         return vect;
 }
 
-pub async fn match_args(command: String)
+pub async fn match_args(command: String, db: &mut Connection)
     -> Result<(), Box<dyn std::error::Error>> {
         // first detect if its a dotcommand
 
@@ -35,10 +35,9 @@ pub async fn match_args(command: String)
                     sqlparser::ast::Statement::Query(_) => {
                         println!("query")
                     },
-                    sqlparser::ast::Statement::Use(_) => {
-                        print!("use")
+                    sqlparser::ast::Statement::Use(name) => {
+                        *db = create_db::create_or_use_db(name.to_string()).await?;
                     },
-                    
                     sqlparser::ast::Statement::CreateDatabase { 
                         db_name, 
                         if_not_exists: _, 
@@ -63,8 +62,13 @@ pub async fn match_args(command: String)
                         with_tags: _, 
                         with_contacts: _ } => 
                     {
-                        create_db::create_db(db_name.to_string()).await; // really, eh? 
-
+                        let _ = create_db::create_or_use_db(db_name.to_string()).await; // really, eh? 
+                    },
+                    sqlparser::ast::Statement::CreateTable(e) => {
+                        db.execute(&e.to_string(), ()).await?;
+                    },
+                    sqlparser::ast::Statement::Delete(e) => {
+                        db.execute(&e.to_string(), ()).await?;
                     },
                     _ => {
                         return Err("Error statement".into());
