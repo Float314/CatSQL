@@ -6,6 +6,7 @@ mod parser;
 mod create_db;
 mod ast;
 mod queryfetch;
+mod configfile;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
