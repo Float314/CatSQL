@@ -1,8 +1,10 @@
+use colorize::AnsiColor;
 /* We pass query to sqlparser and then to libsql */
 use shlex::{self, Shlex};
 use libsql::{Connection};
 use crate::create_db;
 use crate::ast;
+use crate::queryfetch;
 
 fn splitcommand_shlex(command: String) 
     -> Vec<String> {
@@ -27,13 +29,16 @@ pub async fn match_args(command: String, db: &mut Connection)
 
             match &ast_produced {
                 Ok(_) => {}
-                Err(err) => {println!("{}", err.to_string()); return Err("".into())}
+                Err(err) => { println!("{}", err.to_string()); return Err("".into()) }
             }
 
             for statement in ast_produced.unwrap() {
                 match statement {
-                    sqlparser::ast::Statement::Query(_) => {
-                        println!("query")
+                    sqlparser::ast::Statement::Query(q) => {
+                        match queryfetch::fetchquery_print(db.clone(), q.to_string()).await {
+                            Ok(_) => println!("{}", "Query OK!".green().bold()),
+                            Err(e) => println!("Error: {:?}", e)
+                        }
                     },
                     sqlparser::ast::Statement::Use(name) => {
                         *db = create_db::create_or_use_db(name.to_string()).await?;
