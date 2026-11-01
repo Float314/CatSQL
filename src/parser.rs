@@ -2,6 +2,7 @@ use colorize::AnsiColor;
 /* We pass query to sqlparser and then to libsql */
 use shlex::{self, Shlex};
 use libsql::{Connection};
+use sqlparser::ast::ObjectName;
 use crate::create_db;
 use crate::ast;
 use crate::queryfetch;
@@ -40,8 +41,18 @@ pub async fn match_args(command: String, db: &mut Connection)
                             Err(e) => println!("Error: {:?}", e)
                         }
                     },
-                    sqlparser::ast::Statement::Use(name) => {
-                        *db = create_db::create_or_use_db(name.to_string()).await?;
+                    sqlparser::ast::Statement::Use(e) => {
+                        match e {
+                            sqlparser::ast::Use::Object(en) => {
+                                create_db::create_or_use_db(en.to_string()).await?;
+                            }
+                            sqlparser::ast::Use::Database(en) => {
+                                create_db::create_or_use_db(en.to_string()).await?;
+                            }
+                            _ => {
+                                println!("{}", "Unimplemented Feature!".bold().red()); 
+                            }
+                        }
                     },
                     sqlparser::ast::Statement::CreateDatabase { 
                         db_name, 
@@ -75,6 +86,9 @@ pub async fn match_args(command: String, db: &mut Connection)
                     sqlparser::ast::Statement::Delete(e) => {
                         db.execute(&e.to_string(), ()).await?;
                     },
+                    sqlparser::ast::Statement::Insert(e) => {
+                        db.execute(&e.to_string(), ()).await?;
+                    }
                     _ => {
                         return Err("Error statement".into());
                     }
