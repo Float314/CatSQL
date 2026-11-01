@@ -2,17 +2,22 @@ use colorize::*;
 
 use crate::create_db::memory_db_load;
 
-mod parser;
-mod create_db;
 mod ast;
+mod configfile;
+mod create_db;
+mod parser;
 mod queryfetch;
-// mod configfile; // comment out cause we dont need this for now
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Hello, world!");
     println!("{}", "CatSQL v0.1 Alpha.".blue().bold());
     println!("Licensed under {}", "the GNU LGPL v3.".green().bold());
+
+    let config = configfile::get_config_or_create()?;
+    let mut dialect = config.dialect;
+
+    println!("Type .help for help related to CatSQL. Dialect");
+    println!("selected is {}", dialect.display_name().green().bold());
 
     let mut editorlin = rustyline::DefaultEditor::new()?;
     let (_db_obj, mut db) = memory_db_load().await.unwrap();
@@ -22,9 +27,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         match rl {
             Ok(line) => {
-                match parser::match_args(line, &mut db).await {
-                    Ok(_) => {},
-                    Err(_e) => println!("Error occured!")
+                match parser::match_args(line, &mut db, &mut dialect).await {
+                    Ok(_) => {}
+                    Err(_e) => println!("Error occured!"),
                 };
             }
             Err(rustyline::error::ReadlineError::Interrupted) => {

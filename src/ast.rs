@@ -1,63 +1,167 @@
 /* We use sqlparser to generate an AST */
 
+use colorize::AnsiColor;
+use sqlparser::{
+    ast::Statement,
+    dialect::{Dialect, GenericDialect, MySqlDialect, PostgreSqlDialect},
+    parser::Parser,
+};
 use std::process;
 use tabled::{Table, Tabled};
-use colorize::AnsiColor;
-use sqlparser::{self, ast::Statement, dialect::GenericDialect, parser::Parser};
+
+use crate::configfile::{self, SQLDialect};
 
 #[derive(Tabled)]
 struct HelpCmd {
     name: &'static str,
-    description: &'static str
+    description: &'static str,
 }
 
-pub fn generate_ast(query: String) -> Result<Vec<Statement>, Box<dyn std::error::Error>> {
-    let dialect = GenericDialect{};
-    let ast = Parser::parse_sql(&dialect, &query);
+/// Turn CatSQL's configured dialect into the matching sqlparser dialect.
+fn parser_dialect(dialect: SQLDialect) -> Box<dyn Dialect> {
+    match dialect {
+        SQLDialect::MySQLDialect => Box::new(MySqlDialect {}),
+        SQLDialect::SQLParserDialect => Box::new(GenericDialect {}),
+        SQLDialect::PostgreSQLDialect => Box::new(PostgreSqlDialect {}),
+    }
+}
 
-    match &ast {
-        Ok(_) => {
-            return Ok(ast.unwrap())
-        }
+pub fn generate_ast(
+    query: String,
+    dialect_sql: SQLDialect,
+) -> Result<Vec<Statement>, Box<dyn std::error::Error>> {
+    let dialect = parser_dialect(dialect_sql);
+
+    match Parser::parse_sql(dialect.as_ref(), &query) {
+        Ok(ast) => Ok(ast),
         Err(err) => {
-            println!("{} {}", "Error!".bold().red(), dbg!(err)); 
-            return Err("Thread Panicked".into());
+            println!("{} {}", "Error!".bold().red(), err);
+            Err(format!(
+                "Could not parse query using the {}",
+                dialect_sql.display_name()
+            )
+            .into())
         }
     }
 }
 
-pub fn matchdotcmds(mut query: String/* IT HAS TO BE WITH THE DOTS*/) {
+pub fn matchdotcmds(
+    mut query: String, /* IT HAS TO BE WITH THE DOTS */
+    dialect: &mut SQLDialect,
+) {
     query.drain(..1);
 
-    if query == "license" {
-        // license 
-        println!("licensew")
-    }
-    else if query == "notlicense" {
-        println!("notlicense ig")
-    }
-    else if query == "help" {
-        println!("This help is only for {}.", "Dot commands".bold().yellow());
-        println!("{} Dialect Specific instruction is not implemented {}.", "Warning - ".yellow().bold(), "yet".italic());
-        let help = vec![
-            HelpCmd {name: ".license", description:"Shlw License"},
-            HelpCmd {name: ".quit", description:"Exits the program"},
-            HelpCmd {name: ".ast", description:"Shows AST Generated (Diagnostics)"},
-            HelpCmd {name: ".dialect", description:
-                "Shows Which Dialect this program this is configured \nto (ANSI Dialect, MySQL Dialect, sqlparser generic\nDialect)"
-            },
-        ];
-        let tabeeel = Table::new(help);
-        println!("{}", tabeeel);
-    }
-    else if query == "dialect" {
-        println!("This program is set up to the {} ", "ANSI Dialect of SQL".green().bold())
-    }
-    else if query == "quit" {
-        process::exit(0);
-    }
-    else { 
-        println!("Unknown Dot Command: {} {}", query.bold(), "Check Docs and try again!".cyan().bold());
-        println!("{} CatSQL Is still in its alpha stage. Some dotcommands could also be unimplemented.", "Note".cyan().bold());
+    let mut parts = query.split_whitespace();
+    let command = parts.next().unwrap_or("");
+
+    match command {
+        "license" => {
+            // license
+            println!("licensew")
+        }
+        "notlicense" => {
+            println!("notlicense ig")
+        }
+        "help" => {
+            println!("This help is only for {}.", "Dot commands".bold().yellow());
+            println!(
+                "{} Dialect Specific instruction is not implemented {}.",
+                "Warning - ".yellow().bold(),
+                "yet".italic()
+            );
+            let help = vec![
+                HelpCmd {
+                    name: ".license",
+                    description: "Shlw License",
+                },
+                HelpCmd {
+                    name: ".quit",
+                    description: "Exits the program",
+                },
+                HelpCmd {
+                    name: ".ast",
+                    description: "Shows AST Generated (Diagnostics)",
+                },
+                HelpCmd {
+                    name: ".dialect",
+                    description: "Shows the configured SQL dialect. Use\n\
+                                  `.dialect <mysql|postgresql|generic>` to change it",
+                },
+                HelpCmd {
+                    name: ".setup",
+                    description: "Shows the config file location and how to change settings",
+                },
+            ];
+            let tabeeel = Table::new(help);
+            println!("{}", tabeeel);
+        }
+        "dialect" => {
+            let requested: Vec<&str> = parts.collect();
+
+            if requested.is_empty() {
+                println!(
+                    "This program is set up to use the {}",
+                    dialect.display_name().green().bold()
+                );
+                return;
+            }
+
+            let name = requested.join(" ");
+            match name.parse::<SQLDialect>() {
+                Ok(new_dialect) => match configfile::set_dialect(new_dialect) {
+                    Ok(()) => {
+                        *dialect = new_dialect;
+                        println!(
+                            "Dialect changed to the {}",
+                            new_dialect.display_name().green().bold()
+                        );
+                    }
+                    Err(err) => println!(
+                        "{} Could not save the new dialect: {}",
+                        "Error!".bold().red(),
+                        err
+                    ),
+                },
+                Err(_) => {
+                    let choices = SQLDialect::ALL
+                        .iter()
+                        .map(SQLDialect::display_name)
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    println!(
+                        "{} Unknown dialect '{}'. Available dialects: {}",
+                        "Error!".bold().red(),
+                        name,
+                        choices
+                    );
+                }
+            }
+        }
+        "quit" => {
+            process::exit(0);
+        }
+        "setup" => match configfile::get_config_file() {
+            Ok(path) => {
+                println!("Config file: {}", path.display());
+                println!("Current dialect: {}", dialect.display_name().green().bold());
+                println!("Change it with `.dialect <mysql|postgresql|generic>`.");
+            }
+            Err(err) => println!(
+                "{} Could not locate the config file: {}",
+                "Error!".bold().red(),
+                err
+            ),
+        },
+        _ => {
+            println!(
+                "Unknown Dot Command: {} {}",
+                command.to_string().bold(),
+                "Check Docs and try again!".cyan().bold()
+            );
+            println!(
+                "{} CatSQL Is still in its alpha stage. Some dotcommands could also be unimplemented.",
+                "Note".cyan().bold()
+            );
+        }
     }
 }

@@ -12,7 +12,8 @@ CatSQL is a low-effort SQL Command line which implements
 
 - [ ] Implement Config files
 - [ ] Organise functions (accuracy)
-- [*] release v0.2 
+- [*] release v0.2
+- [ ] reconfigure cargo.lock
 
 # License
 GNU LGPL v3.
