@@ -7,14 +7,6 @@ mod create_db;
 mod ast;
 mod queryfetch;
 
-/*  let dialect = GenericDialect {};
-
-    let sql = "SELECT * FROM users WHERE a > b;";
-
-    let ast = Parser::parse_sql(&dialect, sql).unwrap();
-
-    println!("{:?}", ast); */
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Hello, world!");
@@ -22,7 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Licensed under {}", "the GNU LGPL v3.".green().bold());
 
     let mut editorlin = rustyline::DefaultEditor::new()?;
-    let mut db = memory_db_load().await.unwrap();
+    let (_db_obj, mut db) = memory_db_load().await.unwrap();
 
     loop {
         let rl = editorlin.readline("catsql> ");

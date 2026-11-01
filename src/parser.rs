@@ -3,6 +3,7 @@ use colorize::AnsiColor;
 use shlex::{self, Shlex};
 use libsql::{Connection};
 use sqlparser::ast::ObjectName;
+use sqlparser;
 use crate::create_db;
 use crate::ast;
 use crate::queryfetch;
@@ -44,10 +45,14 @@ pub async fn match_args(command: String, db: &mut Connection)
                     sqlparser::ast::Statement::Use(e) => {
                         match e {
                             sqlparser::ast::Use::Object(en) => {
-                                create_db::create_or_use_db(en.to_string()).await?;
+                                let (_db, conn) = create_db::create_or_use_db(en.to_string()).await?;
+                                *db = conn;
+                                println!("{}", "Database changed.".green().bold());
                             }
                             sqlparser::ast::Use::Database(en) => {
-                                create_db::create_or_use_db(en.to_string()).await?;
+                                let (_db, conn) = create_db::create_or_use_db(en.to_string()).await?;
+                                *db = conn;
+                                println!("{}", "Database changed.".green().bold());
                             }
                             _ => {
                                 println!("{}", "Unimplemented Feature!".bold().red()); 
@@ -56,38 +61,32 @@ pub async fn match_args(command: String, db: &mut Connection)
                     },
                     sqlparser::ast::Statement::CreateDatabase { 
                         db_name, 
-                        if_not_exists: _, 
-                        location: _, 
-                        managed_location: _, 
-                        or_replace: _, 
-                        transient: _, 
-                        clone: _, 
-                        data_retention_time_in_days: _, 
-                        max_data_extension_time_in_days: _, 
-                        external_volume: _, 
-                        catalog: _,
-                        replace_invalid_characters: _, 
-                        default_ddl_collation: _,
-                        storage_serialization_policy: _,
-                        comment: _,
-                        default_charset: _, 
-                        default_collation: _, 
-                        catalog_sync: _, 
-                        catalog_sync_namespace_mode: _, 
-                        catalog_sync_namespace_flatten_delimiter: _, 
-                        with_tags: _, 
-                        with_contacts: _ } => 
+                        ..
+                    } => 
                     {
-                        let _ = create_db::create_or_use_db(db_name.to_string()).await; // really, eh? 
+                        let (_db, conn) = create_db::create_or_use_db(db_name.to_string()).await?;
+                        *db = conn;
+                        println!("{}", "Database changed.".green().bold());
                     },
                     sqlparser::ast::Statement::CreateTable(e) => {
                         db.execute(&e.to_string(), ()).await?;
+                        println!("{}", "Query OK!".green().bold());
                     },
                     sqlparser::ast::Statement::Delete(e) => {
                         db.execute(&e.to_string(), ()).await?;
+                        println!("{}", "Query OK!".green().bold());
                     },
                     sqlparser::ast::Statement::Insert(e) => {
                         db.execute(&e.to_string(), ()).await?;
+                        println!("{}", "Query OK!".green().bold());
+                    }
+                    sqlparser::ast::Statement::Update(e) => {
+                        db.execute(&e.to_string(), ()).await?;
+                        println!("{}", "Query OK!".green().bold());
+                    }
+                    sqlparser::ast::Statement::Drop { .. } => {
+                        db.execute(&statement.to_string(), ()).await?;
+                        println!("{}", "Query OK!".green().bold());
                     }
                     _ => {
                         return Err("Error statement".into());
