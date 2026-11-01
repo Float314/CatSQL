@@ -1,21 +1,10 @@
 use colorize::AnsiColor;
 /* We pass query to sqlparser and then to libsql */
-use shlex::{self, Shlex};
 use libsql::{Connection};
-use sqlparser::ast::ObjectName;
 use sqlparser;
 use crate::create_db;
 use crate::ast;
 use crate::queryfetch;
-
-fn splitcommand_shlex(command: String) 
-    -> Vec<String> {
-        let arg = Shlex::new(&command);
-
-        let vect: Vec<String> = arg.collect();
-
-        return vect;
-}
 
 pub async fn match_args(command: String, db: &mut Connection)
     -> Result<(), Box<dyn std::error::Error>> {

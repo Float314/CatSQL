@@ -10,7 +10,6 @@ dependencies = [
  "inquirer",
  "libsql",
  "rustyline",
- "shlex 2.0.1",
  "sqlparser",
  "tabled",
  "tokio",

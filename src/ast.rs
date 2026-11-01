@@ -6,7 +6,7 @@ use colorize::AnsiColor;
 use sqlparser::{self, ast::Statement, dialect::GenericDialect, parser::Parser};
 
 #[derive(Tabled)]
-struct help_cmd {
+struct HelpCmd {
     name: &'static str,
     description: &'static str
 }
@@ -40,10 +40,10 @@ pub fn matchdotcmds(mut query: String/* IT HAS TO BE WITH THE DOTS*/) {
         println!("This help is only for {}.", "Dot commands".bold().yellow());
         println!("{} Dialect Specific instruction is not implemented {}.", "Warning - ".yellow().bold(), "yet".italic());
         let help = vec![
-            help_cmd {name: ".license", description:"Shlw License"},
-            help_cmd {name: ".quit", description:"Exits the program"},
-            help_cmd {name: ".ast", description:"Shows AST Generated (Diagnostics)"},
-            help_cmd {name: ".dialect", description:
+            HelpCmd {name: ".license", description:"Shlw License"},
+            HelpCmd {name: ".quit", description:"Exits the program"},
+            HelpCmd {name: ".ast", description:"Shows AST Generated (Diagnostics)"},
+            HelpCmd {name: ".dialect", description:
                 "Shows Which Dialect this program this is configured \nto (ANSI Dialect, MySQL Dialect, sqlparser generic\nDialect)"
             },
         ];
