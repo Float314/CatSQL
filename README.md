@@ -6,10 +6,13 @@ CatSQL is a low-effort SQL Command line which implements
 - Preety Result and error appearance (through colorize)
 - sqlite backend (libsql for rust) which is preety damn fast
 - its damn cheap
-- Single binary o' a few megabytes 
+- Single binary o' a few megabytes
 
-Liberate yourself brothas of the world! Cats are more less maintainence
-animals than dolphins (gewt the refs, dolphins are still cute tho :D)
+# To-Do 
+
+- [ ] Implement Config files
+- [ ] Organise functions (accuracy)
+- [*] release v0.2 
 
 # License
-GNU LGPL v3. May change to GNU AGPL but ill announce if thata the case :P
+GNU LGPL v3.
