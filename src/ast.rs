@@ -9,7 +9,7 @@ use sqlparser::{
 use std::process;
 use tabled::{Table, Tabled};
 
-use crate::configfile::{self, SQLDialect::{self, AnsiDialect}};
+use crate::configfile::{self, SQLDialect::{self}};
 
 #[derive(Tabled)]
 struct HelpCmd {
