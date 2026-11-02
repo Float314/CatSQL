@@ -10,10 +10,10 @@ CatSQL is a low-effort SQL Command line which implements
 
 # To-Do 
 
-- [ ] Implement Config files
+- [x] Implement Config files
 - [ ] Organise functions (accuracy)
-- [*] release v0.2
-- [ ] reconfigure cargo.lock
+- [x] release v0.2
+- [x] reconfigure cargo.lock
 
 # License
 GNU LGPL v3.
