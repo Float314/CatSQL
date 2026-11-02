@@ -10,7 +10,7 @@ mod queryfetch;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("{}", "CatSQL v0.1 Alpha.".blue().bold());
+    println!("{}", "CatSQL v0.3 Alpha.".blue().bold());
     println!("Licensed under {}", "the GNU LGPL v3.".green().bold());
 
     let config = configfile::get_config_or_create()?;
