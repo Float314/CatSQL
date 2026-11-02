@@ -9,7 +9,7 @@ use sqlparser::{
 use std::process;
 use tabled::{Table, Tabled};
 
-use crate::configfile::{self, SQLDialect};
+use crate::configfile::{self, SQLDialect::{self, AnsiDialect}};
 
 #[derive(Tabled)]
 struct HelpCmd {
@@ -23,6 +23,7 @@ fn parser_dialect(dialect: SQLDialect) -> Box<dyn Dialect> {
         SQLDialect::MySQLDialect => Box::new(MySqlDialect {}),
         SQLDialect::SQLParserDialect => Box::new(GenericDialect {}),
         SQLDialect::PostgreSQLDialect => Box::new(PostgreSqlDialect {}),
+        SQLDialect::AnsiDialect => Box::new(sqlparser::dialect::AnsiDialect {})
     }
 }
 
@@ -85,7 +86,7 @@ pub fn matchdotcmds(
                 HelpCmd {
                     name: ".dialect",
                     description: "Shows the configured SQL dialect. Use\n\
-                                  `.dialect <mysql|postgresql|generic>` to change it",
+                                  `.dialect <mysql|postgresql|generic|ansi>` to change it",
                 },
                 HelpCmd {
                     name: ".setup",

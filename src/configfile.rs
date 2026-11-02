@@ -22,6 +22,13 @@ pub enum SQLDialect {
         alias = "postgres"
     )]
     PostgreSQLDialect,
+    #[serde(
+        rename = "ansi",
+        alias = "AnsiDialect",
+        alias = "ANSI",
+        alias = "ansi"
+    )]
+    AnsiDialect
 }
 
 impl Default for SQLDialect {
@@ -44,6 +51,7 @@ impl SQLDialect {
             Self::MySQLDialect => "MySQL Dialect",
             Self::SQLParserDialect => "Generic (sqlparser) Dialect",
             Self::PostgreSQLDialect => "PostgreSQL Dialect",
+            Self::AnsiDialect => "ANSI Dialect"
         }
     }
 }
@@ -54,8 +62,9 @@ impl FromStr for SQLDialect {
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         match value.trim().to_ascii_lowercase().as_str() {
             "mysql" | "mariadb" | "mysqldialect" => Ok(Self::MySQLDialect),
-            "generic" | "ansi" | "sqlparser" | "sqlparserdialect" => Ok(Self::SQLParserDialect),
+            "generic" | "sqlparser" | "sqlparserdialect" => Ok(Self::SQLParserDialect),
             "postgres" | "postgresql" | "pg" | "postgresqldialect" => Ok(Self::PostgreSQLDialect),
+            "ansi" | "ansisql" => Ok(Self::AnsiDialect),
             _ => Err(()),
         }
     }
