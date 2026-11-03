@@ -153,6 +153,11 @@ pub fn matchdotcmds(
                 err
             ),
         },
+        "ast" => {
+            // remove the `ast` in the query
+            let requested: Vec<&str> = parts.collect();
+            println!("{}", "ast command is yet to implement!".blue());
+        }
         _ => {
             println!(
                 "Unknown Dot Command: {} {}",

@@ -8,7 +8,6 @@ version = "0.3.0"
 dependencies = [
  "colorize",
  "dirs",
- "inquirer",
  "libsql",
  "rustyline",
  "serde",
@@ -815,12 +814,6 @@ dependencies = [
  "block-padding",
  "generic-array",
 ]
-
-[[package]]
-name = "inquirer"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6beccbcce0a2d41d51b79548a7e35ebbb2ddd2b76a87aa101d6efb61e096e962"
 
 [[package]]
 name = "itertools"
