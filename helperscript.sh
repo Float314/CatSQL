@@ -1,25 +1,12 @@
-# Always a helperscript
+# Always a helperscript 
 
-EXECUTABLE=./target/debug/CatSQL
-USAGE="./helperscript.sh [args]"
+CPP=g++
+CPPARGS="-Wall -Wextra -Werror -std=c++23 -g"
 
-case $1 in 
-    "run")
-        $EXECUTABLE
-        ;;
-    "build")
-        cargo build
-        ;;
-    "push")
-        git push origin master
-        ;;
-    "license")
-        echo "GNU LGPL v3"
-        ;;
-    *)
-        echo unknown command: $1 
-        echo usage: 
-        echo $USAGE
-        exit 1
-        ;;
-esac
+cd other/catstoy
+$CPP $CPPARGS -o catstoy main.cpp
+mv catstoy ../../catstoy
+
+cd ../..
+
+echo "Done building catstoy helperprogram"
