@@ -9,6 +9,11 @@
     without any warranty.
 
 */
+
+/* 
+    This is a short helper program to help with the build and run of CatSQL.
+    THis will not work outside of the CatSQL project directory, and is not intended to be used outside of it.
+*/
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -24,6 +29,17 @@
 
 const char* executable = "./target/debug/CatSQL";
 
+/**
+    Main function. 
+
+    Exit Codes 
+    -1: Too less arguments
+    -2: Fork Failed
+    -3: Cargo Failed 
+    +9: Invalid Argument
+
+    bye lol
+*/
 int main(int argc, char* argv[]) {
     try {
     if (argc < 1) {
@@ -66,7 +82,7 @@ int main(int argc, char* argv[]) {
     else if (std::string(argv[1]) == "tag") {
         if (argc < 2) {
             printf("Too low argument count!");
-            std::exit(1);
+            std::exit(-1);
         }
         else {
             std::string command = "git tag -a " + std::string(argv[2]);
