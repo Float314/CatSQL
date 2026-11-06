@@ -71,6 +71,16 @@ pub fn generate_ast(
 }
 
 /*
+ * Function to exit program with a cute goodbye message. 
+ *
+ * Returns only () and nothing else
+*/
+fn quitcatsql() -> () {
+    println!("{}", "Thanks for using CatSQL!".blue().bold());
+    process::exit(0);
+}
+
+/*
  * Parse Dotcommands. 
  *
  * What are dotcommands - 
@@ -175,7 +185,10 @@ pub fn matchdotcmds(
             }
         }
         "quit" => {
-            process::exit(0);
+            quitcatsql();
+        }
+        "exit" => {
+            quitcatsql();
         }
         "setup" => match configfile::get_config_file() {
             Ok(path) => {
@@ -194,7 +207,7 @@ pub fn matchdotcmds(
             let requested: Vec<&str> = parts.collect();
 
             let config = configfile::get_config_or_create().unwrap();
-            let mut dialect = config.dialect;
+            let dialect = config.dialect;
 
             let dialect_a = parser_dialect(dialect);
 
@@ -219,8 +232,9 @@ pub fn matchdotcmds(
                 "Check Docs and try again!".cyan().bold()
             );
             println!(
-                "{} CatSQL Is still in its alpha stage. Some dotcommands could also be unimplemented.",
-                "Note".cyan().bold()
+                "{} CatSQL Is still in its {} stage. Some dotcommands could also be unimplemented.",
+                "Note".cyan().bold(),
+                "initial".italic()
             );
         }
     }
