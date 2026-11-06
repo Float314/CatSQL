@@ -6,7 +6,7 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
-
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -80,7 +80,7 @@ pub fn generate_ast(
  * Supported Dotcommands - 
  * license, help, dialect, quit, setup, ast [yet to implement]
  *
- * To-do: IMplement `ast` command!
+ * To-do: IMplement `ast` command! [DONE]
  * */
 pub fn matchdotcmds(
     mut query: String, /* IT HAS TO BE WITH THE DOTS */
@@ -192,7 +192,25 @@ pub fn matchdotcmds(
         "ast" => {
             // remove the `ast` in the query
             let requested: Vec<&str> = parts.collect();
-            println!("{}", "ast command is yet to implement!".blue());
+
+            let config = configfile::get_config_or_create().unwrap();
+            let mut dialect = config.dialect;
+
+            let dialect_a = parser_dialect(dialect);
+
+            let ast_produced = match Parser::parse_sql(dialect_a.as_ref(), &requested.join(" ")) {
+                Ok(ast) => ast,
+                Err(err) => {
+                    println!("{} {}", "Error!".bold().red(), err);
+                    return;
+                }
+            };
+            println!("{:?} \n", ast_produced);
+            println!(
+                "{} The Dialect Selected was {}",
+                "AST Generation successful!".bold().green(), 
+                dialect.display_name().bold()
+            );
         }
         _ => {
             println!(

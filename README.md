@@ -44,6 +44,7 @@ Key Comaprion i found was these -
 - [ ] Organise functions (accuracy)
 - [x] release v0.2
 - [x] reconfigure cargo.lock
+- [x] Implement `.ast` command
 
 # License
 GNU LGPL v3.
