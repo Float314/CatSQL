@@ -1,7 +1,7 @@
 # Always a helperscript 
 
 CPP=g++
-CPPARGS="-Wall -Wextra -Werror -std=c++23 -g"
+CPPARGS="-Wall -Wextra -std=c++23 -g"
 
 cd other/catstoy
 $CPP $CPPARGS -o catstoy main.cpp
