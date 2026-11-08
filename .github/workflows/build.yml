@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir -p dist
           cp "target/${{ matrix.target }}/release/CatSQL" dist/
-          cp README.md LICENSE dist/
+          cp README.md LICENSE other/a_collection_of_amazing_ghazals.txt dist/
           tar -czf "${{ matrix.archive }}" -C dist .
 
       - name: Package (Windows)
@@ -61,7 +61,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           Copy-Item "target/${{ matrix.target }}/release/CatSQL.exe" dist/
-          Copy-Item README.md, LICENSE dist/
+          Copy-Item README.md, LICENSE, other/a_collection_of_amazing_ghazals.txt dist/
           Compress-Archive -Path dist/* -DestinationPath "${{ matrix.archive }}"
 
       - name: Upload build artifact

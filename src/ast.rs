@@ -213,6 +213,9 @@ pub fn matchdotcmds(
                 dialect.display_name().bold()
             );
         }
+        "clear" => {
+            clearscreen::clear().expect("Failed to clear terminal! Try Again or read `clearscreen` documentation");
+        }
         _ => {
             println!(
                 "Unknown Dot Command: {} {}",
