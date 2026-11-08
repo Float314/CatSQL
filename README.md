@@ -20,7 +20,7 @@ Key Comaprion i found was these -
    while CatSQL only showed around 15-17 Mb Of RAM (Without 
    InnoDB). Htop also confirmed this
 3. Binary Size for `Release` (i.e. `cargo build --release`) size
-   is about 12 Mb. MySQL Shell alone is about 200 Mb. This makes 
+   is about 20 Mb. MySQL Shell alone is about 200 Mb. This makes 
    it easy if you are setting up a small computer labaratory
 4. Almost no external .dll files*. LibSQL is built in (infact i 
    didnt install libsql nor SQLite in my lappy yet.). However, 
