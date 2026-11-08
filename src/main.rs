@@ -25,6 +25,7 @@ mod configfile;
 mod create_db;
 mod parser;
 mod queryfetch;
+mod errordisplay;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -53,7 +54,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(line) => {
                 match parser::match_args(line, &mut db, &mut dialect).await {
                     Ok(_) => {}
-                    Err(_e) => println!("Error occured!"),
+                    Err(e) => println!("{} {}", "Error!".bold().red(), e),
                 };
             }
             /* ctrl-c */

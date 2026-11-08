@@ -21,6 +21,7 @@ use colorize::AnsiColor;
 use crate::ast;
 use crate::configfile::SQLDialect;
 use crate::create_db;
+use crate::errordisplay;
 use crate::queryfetch;
 use libsql::Connection;
 use sqlparser;
@@ -44,9 +45,12 @@ pub async fn match_args(
         ast::matchdotcmds(command.clone(), dialect);
     } else {
         // generate ast using the dialect selected in the config file
-        let ast_produced = match ast::generate_ast(command, *dialect) {
+        let ast_produced = match ast::generate_ast(&command, *dialect) {
             Ok(ast) => ast,
-            Err(err) => return Err(err),
+            Err(err) => {
+                errordisplay::catch_err_print(&command, &err);
+                return Ok(());
+            }
         };
 
         for statement in ast_produced {

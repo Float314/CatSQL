@@ -22,7 +22,7 @@ use colorize::AnsiColor;
 use sqlparser::{
     ast::Statement,
     dialect::{Dialect, GenericDialect, MySqlDialect, PostgreSqlDialect},
-    parser::Parser,
+    parser::{Parser, ParserError},
 };
 use std::process;
 use tabled::{Table, Tabled};
@@ -47,27 +47,16 @@ fn parser_dialect(dialect: SQLDialect) -> Box<dyn Dialect> {
 
 /* 
  * Generate AST Based on Dialect and Query.
- * query: String -> The query to feed to sqlparser. 
+ * query: &str -> The query to feed to sqlparser. 
  * dialect_sql: SQLDialect (enum) -> Dialect. (more details on configfile.rs )
  *
 */
 pub fn generate_ast(
-    query: String,
+    query: &str,
     dialect_sql: SQLDialect,
-) -> Result<Vec<Statement>, Box<dyn std::error::Error>> {
+) -> Result<Vec<Statement>, ParserError> {
     let dialect = parser_dialect(dialect_sql);
-
-    match Parser::parse_sql(dialect.as_ref(), &query) {
-        Ok(ast) => Ok(ast),
-        Err(err) => {
-            println!("{} {}", "Error!".bold().red(), err);
-            Err(format!(
-                "Could not parse query using the {}",
-                dialect_sql.display_name()
-            )
-            .into())
-        }
-    }
+    Parser::parse_sql(dialect.as_ref(), query)
 }
 
 /*
@@ -209,12 +198,11 @@ pub fn matchdotcmds(
             let config = configfile::get_config_or_create().unwrap();
             let dialect = config.dialect;
 
-            let dialect_a = parser_dialect(dialect);
-
-            let ast_produced = match Parser::parse_sql(dialect_a.as_ref(), &requested.join(" ")) {
+            let query = requested.join(" ");
+            let ast_produced = match generate_ast(&query, dialect) {
                 Ok(ast) => ast,
                 Err(err) => {
-                    println!("{} {}", "Error!".bold().red(), err);
+                    crate::errordisplay::catch_err_print(&query, &err);
                     return;
                 }
             };
