@@ -108,10 +108,10 @@ pub fn matchdotcmds(
             let help = vec![
                 HelpCmd {
                     name: ".license",
-                    description: "Shlw License",
+                    description: "Show License",
                 },
                 HelpCmd {
-                    name: ".quit",
+                    name: ".quit | .exit",
                     description: "Exits the program",
                 },
                 HelpCmd {
@@ -127,6 +127,10 @@ pub fn matchdotcmds(
                     name: ".setup",
                     description: "Shows the config file location and how to change settings",
                 },
+                HelpCmd {
+                    name: ".clear",
+                    description: "Clears the terminal screen (i had to add 20 rust deps to \nimplement it)"
+                }
             ];
             let tabeeel = Table::new(help);
             println!("{}", tabeeel);
