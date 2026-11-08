@@ -60,6 +60,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             /* ctrl-c */
             Err(rustyline::error::ReadlineError::Interrupted) => {
                 println!("{}", "Ctrl-c".red());
+                println!("{}", "Thanks for using CatSQL!".blue().bold());                
                 break;
             }
             Err(_) => {
