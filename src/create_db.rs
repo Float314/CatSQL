@@ -18,6 +18,13 @@
 */
 
 use libsql::{Builder, Connection, Database};
+use crate::configfile;
+use std::path::PathBuf;
+
+pub fn get_database_dir() -> Result<PathBuf, Box<dyn std::error::Error>> {
+    let path_to_cfg = dirs::data_local_dir().ok_or("Could Not determine Local Database Directory!")?;
+    Ok(path_to_cfg.join("catsql"))
+}
 
 /* 
  * Create database. If exist, use the database. 
@@ -27,8 +34,10 @@ use libsql::{Builder, Connection, Database};
  * To-do: Set a default directory for SQL Creation!
 */
 pub async fn create_or_use_db(name: String) -> Result<(Database, Connection),Box<dyn std::error::Error>>{
+
     let filename = if name.ends_with(".sqlite") { name.clone() } else { name + ".sqlite" };
-    let filepath = "./".to_owned() + &filename;
+    let database_dir = get_database_dir()?;
+    let filepath = database_dir.join(filename).to_string_lossy().into_owned();
     let db = Builder::new_local(filepath)
         .build().await?;
     let connection = db.connect()?;

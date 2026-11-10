@@ -40,6 +40,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Type .help for help related to CatSQL. Dialect");
     println!("selected is {}", dialect.display_name().green().bold());
 
+    println!("\n{} Location Setup in {:?} by dirs.", "debug".yellow(), create_db::get_database_dir());
+
     // rustyline editor load
     let mut editorlin = rustyline::DefaultEditor::new()?;
 
