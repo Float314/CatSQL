@@ -220,7 +220,8 @@ mod tests {
     fn parses_known_dialect_names() {
         assert_eq!("mysql".parse(), Ok(SQLDialect::MySQLDialect));
         assert_eq!("PostgreSQL".parse(), Ok(SQLDialect::PostgreSQLDialect));
-        assert_eq!("ansi".parse(), Ok(SQLDialect::SQLParserDialect));
+        assert_eq!("ansi".parse(), Ok(SQLDialect::AnsiDialect));
+        assert_eq!("generic".parse(), Ok(SQLDialect::SQLParserDialect));
         assert!("not-a-dialect".parse::<SQLDialect>().is_err());
     }
 

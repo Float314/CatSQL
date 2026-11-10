@@ -18,7 +18,6 @@
 */
 
 use libsql::{Builder, Connection, Database};
-use crate::configfile;
 use std::path::PathBuf;
 
 pub fn get_database_dir() -> Result<PathBuf, Box<dyn std::error::Error>> {
@@ -37,6 +36,10 @@ pub async fn create_or_use_db(name: String) -> Result<(Database, Connection),Box
 
     let filename = if name.ends_with(".sqlite") { name.clone() } else { name + ".sqlite" };
     let database_dir = get_database_dir()?;
+    // SQLite cannot create the database file if its parent directory is
+    // missing, which is the case on a fresh install (or after moving the
+    // databases out of the current directory).
+    std::fs::create_dir_all(&database_dir)?;
     let filepath = database_dir.join(filename).to_string_lossy().into_owned();
     let db = Builder::new_local(filepath)
         .build().await?;
